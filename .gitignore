@@ -1,0 +1,10 @@
+# Cabal files
+.cabal-sandbox/
+cabal.sandbox.config
+dist/
+
+# Compiled code
+*.exe
+*.out
+*.dll
+*.so
