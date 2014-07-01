@@ -69,7 +69,8 @@ parseQuoted = do
 
 -- A singular lips parser that applies 
 lipsParser :: Parser LipsVal
-lipsParser =
+lipsParser = do
+  optional spaces
   choice $ map try parsers
   where parsers = [ parseLAtom
                   , parseLList
