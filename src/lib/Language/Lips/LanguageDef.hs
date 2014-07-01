@@ -1,4 +1,4 @@
-module Language.Lips.Language where
+module Language.Lips.LanguageDef where
 
 --------------------
 -- Global Imports --
@@ -6,6 +6,8 @@ import Data.Monoid
 
 ----------
 -- Code --
+
+-- LipsVal definition
 data LipsVal = LAtom       String
              | LList       [LipsVal]
              | LDottedList [LipsVal] LipsVal
@@ -13,6 +15,7 @@ data LipsVal = LAtom       String
              | LString     String
              | LBool       Bool
 
+-- Show instance for LipsVal
 instance Show LipsVal where
   show (LAtom       name  ) = name
   show (LList       list  ) = mconcat ["(", foldl1 (\a b -> a ++ " " ++ b) $ map (show) list, ")"]
