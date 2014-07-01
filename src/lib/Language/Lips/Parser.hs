@@ -79,9 +79,15 @@ lipsParser =
                   , parseQuoted
                   ]
 
--- Parsing out a lips value
-parseLips :: String -> LipsVal
-parseLips input =
-  case parse lipsParser "parseLips" input of
+-- Parsing out lips values
+lips :: String -> LipsVal
+lips input =
+  case parse lipsParser "lips" input of
     Left  err -> LAtom $ show err
+    Right val -> val
+
+manyLips :: String -> [LipsVal]
+manyLips input =
+  case parse (many1 lipsParser) "manyLips" input of
+    Left  err -> [LAtom $ show err]
     Right val -> val

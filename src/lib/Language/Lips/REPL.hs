@@ -32,7 +32,7 @@ repl = do
   case line of
     "quit" -> return ()
     other  -> do
-      putStrLn $ show $ eval $ parseLips other
+      putStrLn $ show $ eval $ lips other
       hFlush stdout
       repl
 
