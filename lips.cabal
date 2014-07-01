@@ -14,6 +14,7 @@ library
   exposed-modules: Language.Lips.LanguageDef
                  , Language.Lips.Evaluator
                  , Language.Lips.Parser
+                 , Language.Lips.REPL
 
   default-language: Haskell2010
 
