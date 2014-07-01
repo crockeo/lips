@@ -1,7 +1,11 @@
 module Language.Lips.Language where
 
+--------------------
+-- Global Imports --
 import Data.Monoid
 
+----------
+-- Code --
 data LipsVal = LAtom       String
              | LList       [LipsVal]
              | LDottedList [LipsVal] LipsVal
