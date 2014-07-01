@@ -83,5 +83,5 @@ lipsParser =
 parseLips :: String -> LipsVal
 parseLips input =
   case parse lipsParser "parseLips" input of
-    Left  err -> error $ show err
+    Left  err -> LAtom $ show err
     Right val -> val
