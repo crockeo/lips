@@ -18,7 +18,7 @@ data LipsVal = LAtom       String
 -- Show instance for LipsVal
 instance Show LipsVal where
   show (LAtom       name  ) = name
-  show (LList       list  ) = mconcat ["(", unlines $ map (show) list, ")"]
+  show (LList       list  ) = mconcat ["(", unwords $ map (show) list, ")"]
   show (LDottedList list v) = mconcat ["(", show $ LList list, " . ", show v, ")"]
   show (LNumber     number) = show number
   show (LString     string) = show string
