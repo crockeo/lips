@@ -38,5 +38,5 @@ primitives =
 getPrimitive :: String -> Function
 getPrimitive name =
   case Map.lookup name primitives of
-    Nothing  -> \l -> LAtom $ "Error: Could not find definition for variable name " ++ name ++ "."
+    Nothing  -> \l -> LAtom $ "Error: Could not find definition for variable name '" ++ name ++ "'."
     Just val -> val
