@@ -23,8 +23,8 @@ apply psfn args = do
 newEval :: LipsVal -> ProgramState LipsVal
 newEval (LList [LAtom "bind"   , LAtom name, val]) = pushVariable name (\l -> val)  >> return lNull
 newEval (LList [LAtom "drop"   , LAtom name     ]) = dropVariable name              >> return lNull
-newEval (LList [LAtom "print"  , val            ]) = (liftIO $ putStr   $ show val) >> return lNull
-newEval (LList [LAtom "println", val            ]) = (liftIO $ putStrLn $ show val) >> return lNull
+newEval (LList [LAtom "print"  , val            ]) = newEval val >>= (liftIO . putStr   . show) >> return lNull
+newEval (LList [LAtom "println", val            ]) = newEval val >>= (liftIO . putStrLn . show) >> return lNull
 newEval (LList [LAtom "quote"  , val            ]) = return val
 newEval (LList (LAtom name:args)                 ) = apply (getVariable name) args
 newEval (LAtom name                              ) = apply (getVariable name) []
