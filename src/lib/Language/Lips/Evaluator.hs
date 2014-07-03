@@ -26,8 +26,8 @@ newEval (LList [LAtom "drop"   , LAtom name     ]) = dropVariable name          
 newEval (LList [LAtom "print"  , val            ]) = (liftIO $ putStr   $ show val) >> return lNull
 newEval (LList [LAtom "println", val            ]) = (liftIO $ putStrLn $ show val) >> return lNull
 newEval (LList [LAtom "quote"  , val            ]) = return val
-newEval (LList (LAtom name:args))                  = apply (getVariable name) args
-newEval LAtom name                                 = apply (getVariable name) []
+newEval (LList (LAtom name:args)                 ) = apply (getVariable name) args
+newEval (LAtom name                              ) = apply (getVariable name) []
 newEval other                                      = return other
 
 -- Evaluating a LipsVal operation
