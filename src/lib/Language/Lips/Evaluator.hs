@@ -3,6 +3,7 @@ module Language.Lips.Evaluator where
 --------------------
 -- Global Imports --
 import Control.Monad.State (liftIO)
+import Control.Monad
 
 -------------------
 -- Local Imports --
@@ -21,12 +22,12 @@ apply psfn args = do
 
 -- New eval
 newEval :: LipsVal -> ProgramState LipsVal
-newEval (LList [LAtom "bind"   , LAtom name, val]) = pushVariable name (\l -> val)  >> return lNull
+newEval (LList [LAtom "bind"   , LAtom name, val]) = newEval val >>= (\x -> pushVariable name (\l -> x))  >> return lNull
 newEval (LList [LAtom "drop"   , LAtom name     ]) = dropVariable name              >> return lNull
 newEval (LList [LAtom "print"  , val            ]) = newEval val >>= (liftIO . putStr   . show) >> return lNull
 newEval (LList [LAtom "println", val            ]) = newEval val >>= (liftIO . putStrLn . show) >> return lNull
 newEval (LList [LAtom "quote"  , val            ]) = return val
-newEval (LList (LAtom name:args)                 ) = apply (getVariable name) args
+newEval (LList (LAtom name:args)                 ) = (sequence $ map newEval args) >>= apply (getVariable name)
 newEval (LAtom name                              ) = apply (getVariable name) []
 newEval other                                      = return other
 
