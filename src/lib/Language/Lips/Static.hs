@@ -22,7 +22,7 @@ import Language.Lips.State
 runList :: [LipsVal] -> ProgramState ()
 runList []     = return ()
 runList (x:xs) = do
-  newEval x
+  eval x
   liftIO $ hFlush stdout
 
   runList xs

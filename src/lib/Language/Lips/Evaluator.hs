@@ -21,19 +21,12 @@ apply psfn args = do
   return $ fn args
 
 -- New eval
-newEval :: LipsVal -> ProgramState LipsVal
-newEval (LList [LAtom "bind"   , LAtom name, val]) = newEval val >>= (\x -> pushVariable name (\l -> x))  >> return lNull
-newEval (LList [LAtom "drop"   , LAtom name     ]) = dropVariable name              >> return lNull
-newEval (LList [LAtom "print"  , val            ]) = newEval val >>= (liftIO . putStr   . show) >> return lNull
-newEval (LList [LAtom "println", val            ]) = newEval val >>= (liftIO . putStrLn . show) >> return lNull
-newEval (LList [LAtom "quote"  , val            ]) = return val
-newEval (LList (LAtom name:args)                 ) = (sequence $ map newEval args) >>= apply (getVariable name)
-newEval (LAtom name                              ) = apply (getVariable name) []
-newEval other                                      = return other
-
--- Evaluating a LipsVal operation
-eval :: LipsVal -> LipsVal
-eval (LAtom func                ) = getPrimitive func []
-eval (LList [LAtom "quote", val]) = val
-eval (LList (LAtom func:args)   ) = getPrimitive func $ map eval args
-eval other                        = other
+eval :: LipsVal -> ProgramState LipsVal
+eval (LList [LAtom "bind"   , LAtom name, val]) = eval val >>= (\x -> pushVariable name (\l -> x))  >> return lNull
+eval (LList [LAtom "drop"   , LAtom name     ]) = dropVariable name              >> return lNull
+eval (LList [LAtom "print"  , val            ]) = eval val >>= (liftIO . putStr   . show) >> return lNull
+eval (LList [LAtom "println", val            ]) = eval val >>= (liftIO . putStrLn . show) >> return lNull
+eval (LList [LAtom "quote"  , val            ]) = return val
+eval (LList (LAtom name:args)                 ) = (sequence $ map eval args) >>= apply (getVariable name)
+eval (LAtom name                              ) = apply (getVariable name) []
+eval other                                      = return other

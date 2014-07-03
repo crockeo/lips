@@ -37,7 +37,7 @@ repl = do
   case line of
     "quit" -> return ()
     other  -> do
-      newEval $ lips other
+      eval $ lips other
       liftIO $ hFlush stdout
       repl
 
