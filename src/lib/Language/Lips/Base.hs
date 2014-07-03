@@ -9,12 +9,10 @@ import Data.Monoid
 -------------------
 -- Local Imports --
 import Language.Lips.LanguageDef
+import Language.Lips.State
 
 ----------
 -- Code --
-
--- Function type
-type Function = [LipsVal] -> LipsVal
 
 -- Creating a binary operator
 makeBinaryOperator :: (Double -> Double -> Double) -> Function
