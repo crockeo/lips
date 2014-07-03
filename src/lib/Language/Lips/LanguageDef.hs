@@ -24,3 +24,7 @@ instance Show LipsVal where
   show (LString     string) = show string
   show (LBool       True  ) = "#t"
   show (LBool       False ) = "#f"
+
+-- A null definition
+lNull :: LipsVal
+lNull = LList []
