@@ -35,10 +35,24 @@ dropVariable :: String -> ProgramState ()
 dropVariable key =
   state $ \program -> ((), program { variables = Map.delete key $ variables program })
 
--- Getting a variable
-getVariable :: String -> ProgramState Function
-getVariable key =
+-- Getting a variable safely
+getVariableSafe :: String -> ProgramState (Maybe Function)
+getVariableSafe key =
   state $ \program ->
-    (case Map.lookup key $ variables program of
-       Nothing  -> \l -> LString $ mconcat ["Error: Could not find definition for variable name '", key, "'"]
-       Just val -> val, program)
+    (Map.lookup key $ variables program, program)
+
+-- Checking if a variable exists
+hasVariable :: String -> ProgramState Bool
+hasVariable key = do
+  mvs <- getVariableSafe key
+  return $ case mvs of
+    Just vs -> True
+    Nothing -> False
+
+-- Getting a variable unsafely
+getVariable :: String -> ProgramState Function
+getVariable key = do
+  mvs <- getVariableSafe key
+  case mvs of
+    Just vs -> return vs
+    Nothing -> error "Accessed a variable that does not exist."
