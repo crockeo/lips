@@ -7,6 +7,10 @@ module Language.Lips.Error where
 data ErrorType = VariableNotDefinedError
   deriving (Eq, Show, Read)
 
+-- Pretilly displaying an ErrorType
+displayErrorType :: ErrorType -> String
+displayErrorType t = "Error thrown: " ++ show t
+
 -- The actual error monad
 data Error a = Success a | Error ErrorType
 
