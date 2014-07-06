@@ -16,17 +16,14 @@ import Language.Lips.LanguageDef
 ----------
 -- Code --
 
--- A function type synonym
-type Function = [LipsVal] -> Error LipsVal
-
 -- Program data type
-data Program = Program { variables :: Map.Map String Function }
+data Program = Program { variables :: Map.Map String LipsVal }
 
 -- A program state type synonym
 type ProgramState a = StateT Program IO a
 
 -- Pushing a variable
-pushVariable :: String -> Function -> ProgramState ()
+pushVariable :: String -> LipsVal -> ProgramState ()
 pushVariable key fn =
   state $ \program -> ((), program { variables = Map.insert key fn $ variables program })
 
@@ -36,7 +33,7 @@ dropVariable key =
   state $ \program -> ((), program { variables = Map.delete key $ variables program })
 
 -- Getting a variable safely
-getVariableSafe :: String -> ProgramState (Maybe Function)
+getVariableSafe :: String -> ProgramState (Maybe LipsVal)
 getVariableSafe key =
   state $ \program ->
     (Map.lookup key $ variables program, program)
@@ -50,9 +47,9 @@ hasVariable key = do
     Nothing -> False
 
 -- Getting a variable unsafely
-getVariable :: String -> ProgramState Function
+getVariable :: String -> ProgramState (Error LipsVal)
 getVariable key = do
   mvs <- getVariableSafe key
   case mvs of
-    Just vs -> return vs
-    Nothing -> error "Accessed a variable that does not exist."
+    Just vs -> return $ Success vs
+    Nothing -> return $ Error VariableNotDefinedError
