@@ -53,7 +53,7 @@ data LipsVal = LAtom       String
              | LNumber     Double
              | LString     String
              | LBool       Bool
-             | LFunction   [LipsVal] -> Error LipsVal
+             | LFunction   ([LipsVal] -> Error LipsVal)
 
 -- Show instance for LipsVal
 instance Show LipsVal where
