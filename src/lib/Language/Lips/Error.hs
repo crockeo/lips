@@ -1,5 +1,9 @@
 module Language.Lips.Error where
 
+--------------------
+-- Global Imports --
+import Control.Applicative
+
 ----------
 -- Code --
 
@@ -23,3 +27,20 @@ instance (Show a) => Show (Error a) where
 instance Functor Error where
   fmap fn (Success a) = Success $ fn a
   fmap fn (Error   t) = Error t
+
+-- A monad instance
+instance Monad Error where
+  return a = Success a
+  err >>= fn =
+    case err of
+      Success a  -> fn a
+      Error   et -> Error et
+
+-- An applicative instance
+instance Applicative Error where
+  pure a = return a
+  efn <*> err = do
+    fn  <- efn
+    val <- err
+
+    return $ fn val
