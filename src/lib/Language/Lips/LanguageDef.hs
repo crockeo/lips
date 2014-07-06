@@ -10,6 +10,7 @@ import Data.Monoid
 
 -- Error types
 data ErrorType = VariableNotDefinedError
+               | InvalidFunctionApplicationError
   deriving (Eq, Show, Read)
 
 -- Pretilly displaying an ErrorType

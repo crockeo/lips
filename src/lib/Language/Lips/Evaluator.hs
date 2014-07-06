@@ -9,7 +9,6 @@ import Control.Monad
 -- Local Imports --
 import Language.Lips.LanguageDef
 import Language.Lips.State
-import Language.Lips.Base
 
 ----------
 -- Code --
@@ -64,17 +63,29 @@ eVarLookup name args = do
     Success val -> safeEval $ LList (val : args)
     Error   et  -> return $ Error et
 
+-- Applying an LFunction to its arguments
+eApply :: LipsVal -> [LipsVal] -> ProgramState (Error LipsVal)
+eApply (LFunction names val) args
+  | length names /= length args = return $ Error InvalidFunctionApplicationError
+  | otherwise = do
+    let zipped = zip names args
+    forM_ zipped (\(name, arg) -> eBind name arg)
+    v <- safeEval val
+    forM_ zipped (\(name, arg) -> eDrop name)
+
+    return v
+
 -- Safely evaluating things
 safeEval :: LipsVal -> ProgramState (Error LipsVal)
-safeEval (LList [LAtom "bind"   , LAtom name, val]) = eBind name val
-safeEval (LList [LAtom "drop"   , LAtom name     ]) = eDrop name
-safeEval (LList [LAtom "print"  , val            ]) = ePrint val
-safeEval (LList [LAtom "println", val            ]) = ePrintln val
-safeEval (LList [LAtom "quote"  , val            ]) = return $ Success val
-safeEval (LList (LAtom name     : args           )) = eVarLookup name args
-safeEval (LAtom name                              ) = eVarLookup name []
-safeEval (LList (LFunction fn   : args           )) = return $ fn args
-safeEval other                                      = return $ Success other
+safeEval (LList [LAtom "bind"      , LAtom name, val]) = eBind name val
+safeEval (LList [LAtom "drop"      , LAtom name     ]) = eDrop name
+safeEval (LList [LAtom "print"     , val            ]) = ePrint val
+safeEval (LList [LAtom "println"   , val            ]) = ePrintln val
+safeEval (LList [LAtom "quote"     , val            ]) = return $ Success val
+safeEval (LList (LAtom name        : args           )) = eVarLookup name args
+safeEval (LAtom name                                 ) = eVarLookup name []
+safeEval (LList (fn@(LFunction _ _): args           )) = eApply fn args
+safeEval other                                         = return $ Success other
 
 -- Evaluating a LipsVal (printing any error messages)
 eval :: LipsVal -> ProgramState LipsVal

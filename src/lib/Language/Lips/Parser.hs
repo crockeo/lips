@@ -24,16 +24,22 @@ symbol = oneOf "!#$%&|*+-/:<=>?@^_~"
 spaces :: Parser ()
 spaces = skipMany1 space
 
--- Parsing an LAtom
-parseLAtom :: Parser LipsVal
-parseLAtom = do
+-- Parsing a token
+parseToken :: Parser String
+parseToken = do
   first <-        choice [letter, symbol]
   rest  <- many $ choice [letter, symbol, digit]
 
-  return $ case first : rest of
-    "#t"  -> LBool True
-    "#f"  -> LBool False
-    other -> LAtom other
+  return $ first : rest
+
+-- Parsing an LAtom
+parseLAtom :: Parser LipsVal
+parseLAtom = do
+  str <- parseToken
+  case str of
+    "#t"  -> return $ LBool True
+    "#f"  -> return $ LBool False
+    other -> return $ LAtom other
 
 -- Parsing an LList
 parseLList :: Parser LipsVal
@@ -60,6 +66,18 @@ parseLNumber = do
 parseLString :: Parser LipsVal
 parseLString = liftM LString $ between (char '"') (char '"') (many1 $ noneOf "\"")
 
+-- Parsing an LFunction
+parseLFunction :: Parser LipsVal
+parseLFunction =
+  between (char '(') (char ')') $ do
+    try $ string "lambda"
+    spaces
+    args <- between (char '(') (char ')') $ sepBy parseToken spaces
+    spaces
+    val  <- lipsParser
+
+    return $ LFunction args val
+
 -- Single-quote syntax
 parseQuoted :: Parser LipsVal
 parseQuoted = do
@@ -73,6 +91,7 @@ lipsParser = do
   optional spaces
   choice $ map try parsers
   where parsers = [ parseLAtom
+                  , parseLFunction
                   , parseLList
                   , parseLDottedList
                   , parseLNumber
