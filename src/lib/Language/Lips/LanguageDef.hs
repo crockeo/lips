@@ -64,6 +64,7 @@ instance Show LipsVal where
   show (LString     string) = show string
   show (LBool       True  ) = "#t"
   show (LBool       False ) = "#f"
+  show (LFunction   _     ) = "LFunction"
 
 -- A null definition
 lNull :: LipsVal
