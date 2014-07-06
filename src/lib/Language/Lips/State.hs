@@ -16,11 +16,38 @@ import Language.Lips.LanguageDef
 ----------
 -- Code --
 
+-- A function type
+type Primitive = [LipsVal] -> Error LipsVal
+
 -- Program data type
-data Program = Program { variables :: Map.Map String LipsVal }
+data Program = Program { primitives :: Map.Map String Primitive
+                       , variables  :: Map.Map String LipsVal
+                       }
 
 -- A program state type synonym
 type ProgramState a = StateT Program IO a
+
+-- Getting a primitive safely
+getPrimitiveSafe :: String -> ProgramState (Maybe Primitive)
+getPrimitiveSafe key =
+  state $ \program ->
+    (Map.lookup key $ primitives program, program)
+
+-- Checking if a primtive exists
+hasPrimitive :: String -> ProgramState Bool
+hasPrimitive key = do
+  mp <- getPrimitiveSafe key
+  return $ case mp of
+    Just _  -> True
+    Nothing -> False
+
+-- Applying a list of LipsVals to a primitive
+applyPrimitive :: String -> [LipsVal] -> ProgramState (Error LipsVal)
+applyPrimitive key vals = do
+  mp <- getPrimitiveSafe key
+  return $ case mp of
+    Just p  -> p vals
+    Nothing ->  Error VariableNotDefinedError
 
 -- Pushing a variable
 pushVariable :: String -> LipsVal -> ProgramState ()
@@ -43,13 +70,13 @@ hasVariable :: String -> ProgramState Bool
 hasVariable key = do
   mvs <- getVariableSafe key
   return $ case mvs of
-    Just vs -> True
+    Just _  -> True
     Nothing -> False
 
 -- Getting a variable unsafely
 getVariable :: String -> ProgramState (Error LipsVal)
 getVariable key = do
   mvs <- getVariableSafe key
-  case mvs of
-    Just vs -> return $ Success vs
-    Nothing -> return $ Error VariableNotDefinedError
+  return $ case mvs of
+    Just vs -> Success vs
+    Nothing -> Error VariableNotDefinedError

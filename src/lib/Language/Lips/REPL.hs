@@ -45,4 +45,6 @@ repl = do
 startRepl :: IO ()
 startRepl = do
   printHeader
-  evalStateT repl $ Program { variables = Map.fromList [] }
+  evalStateT repl $ Program { primitives = Map.fromList []
+                            , variables  = Map.fromList []
+                            }

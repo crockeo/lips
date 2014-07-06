@@ -31,4 +31,6 @@ runList (x:xs) = do
 runStatic :: FilePath -> IO ()
 runStatic path = do
   contents <- readFile path
-  evalStateT (runList $ manyLips contents) $ Program { variables = Map.fromList [] }
+  evalStateT (runList $ manyLips contents) $ Program { primitives = Map.fromList []
+                                                     , variables  = Map.fromList []
+                                                     }
