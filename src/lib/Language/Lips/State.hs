@@ -12,12 +12,13 @@ import Data.Monoid
 -------------------
 -- Local Imports --
 import Language.Lips.LanguageDef
+import Language.Lips.Error
 
 ----------
 -- Code --
 
 -- A function type synonym
-type Function = [LipsVal] -> LipsVal
+type Function = [LipsVal] -> Error LipsVal
 
 -- Program data type
 data Program = Program { variables :: Map.Map String Function }
