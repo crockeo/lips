@@ -15,7 +15,6 @@ library
                  , Language.Lips.Evaluator
                  , Language.Lips.Parser
                  , Language.Lips.Static
-                 , Language.Lips.Error
                  , Language.Lips.State
                  , Language.Lips.Base
                  , Language.Lips.REPL

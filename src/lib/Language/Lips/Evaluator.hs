@@ -8,7 +8,6 @@ import Control.Monad
 -------------------
 -- Local Imports --
 import Language.Lips.LanguageDef
-import Language.Lips.Error
 import Language.Lips.State
 import Language.Lips.Base
 
