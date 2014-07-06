@@ -53,7 +53,7 @@ data LipsVal = LAtom       String
              | LNumber     Double
              | LString     String
              | LBool       Bool
-             | LFunction   ([LipsVal] -> Error LipsVal)
+             | LFunction   [String] LipsVal
 
 -- Show instance for LipsVal
 instance Show LipsVal where
@@ -64,7 +64,7 @@ instance Show LipsVal where
   show (LString     string) = show string
   show (LBool       True  ) = "#t"
   show (LBool       False ) = "#f"
-  show (LFunction   _     ) = "LFunction"
+  show (LFunction   args v) = mconcat ["(lambda ", show $ LList $ map LAtom args, "\n  ", show v, ")"]
 
 -- A null definition
 lNull :: LipsVal
