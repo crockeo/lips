@@ -16,6 +16,7 @@ library
                  , Language.Lips.Parser
                  , Language.Lips.Static
                  , Language.Lips.State
+                 , Language.Lips.Base
                  , Language.Lips.REPL
 
   default-language: Haskell2010
