@@ -13,6 +13,7 @@ import System.IO
 import Language.Lips.Evaluator
 import Language.Lips.Parser
 import Language.Lips.State
+import Language.Lips.Base
 
 ----------
 -- Code --
@@ -45,6 +46,6 @@ repl = do
 startRepl :: IO ()
 startRepl = do
   printHeader
-  evalStateT repl $ Program { primitives = Map.fromList []
+  evalStateT repl $ Program { primitives = basePrimitives
                             , variables  = Map.fromList []
                             }

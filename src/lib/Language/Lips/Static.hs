@@ -14,6 +14,7 @@ import Language.Lips.LanguageDef
 import Language.Lips.Evaluator
 import Language.Lips.Parser
 import Language.Lips.State
+import Language.Lips.Base
 
 ----------
 -- Code --
@@ -31,6 +32,6 @@ runList (x:xs) = do
 runStatic :: FilePath -> IO ()
 runStatic path = do
   contents <- readFile path
-  evalStateT (runList $ manyLips contents) $ Program { primitives = Map.fromList []
+  evalStateT (runList $ manyLips contents) $ Program { primitives = basePrimitives
                                                      , variables  = Map.fromList []
                                                      }
