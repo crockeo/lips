@@ -48,6 +48,15 @@ instance Applicative Error where
 
     return $ fn val
 
+-- Checking if an error kinds
+isSuccess :: Error a -> Bool
+isSuccess (Success _) = True
+isSuccess (Error   _) = False
+
+isError :: Error a -> Bool
+isError (Success _) = False
+isError (Error   _) = True
+
 -- LipsVal definition
 data LipsVal = LAtom       String
              | LList       [LipsVal]
