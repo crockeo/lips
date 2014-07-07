@@ -12,12 +12,10 @@ import Data.Monoid
 -------------------
 -- Local Imports --
 import Language.Lips.LanguageDef
+import Language.Lips.Base
 
 ----------
 -- Code --
-
--- A function type
-type Primitive = [LipsVal] -> Error LipsVal
 
 -- Program data type
 data Program = Program { primitives :: Map.Map String Primitive
