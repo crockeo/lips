@@ -59,12 +59,15 @@ eVarLookup :: String -> [LipsVal] -> ProgramState (Error LipsVal)
 eVarLookup name args = do
   hp <- hasPrimitive name
   if hp
-    then applyPrimitive name args
+    then mapM eval args >>= applyPrimitive name
     else do
       errval <- getVariable name
 
       case errval of
-        Success val -> safeEval $ LList (val : args)
+        Success val ->
+          if null args
+            then safeEval val
+            else safeEval $ LList (val : args)
         Error   et  -> return $ Error et
 
 -- Applying an LFunction to its arguments
@@ -90,6 +93,7 @@ safeEval (LList [LAtom "quote"     , val            ]) = return $ Success val
 safeEval (LList (LAtom name        : args           )) = eVarLookup name args
 safeEval (LAtom name                                 ) = eVarLookup name []
 safeEval (LList (fn@(LFunction _ _): args           )) = eApply fn args
+safeEval fn@(LFunction _ _                           ) = return $ Success fn
 safeEval other                                         = return $ Success other
 
 -- Evaluating a LipsVal (printing any error messages)
