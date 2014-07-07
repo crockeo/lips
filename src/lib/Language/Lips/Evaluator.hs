@@ -57,11 +57,15 @@ ePrintln = performIO $ putStrLn . show
 -- Re-evaluating an accessed variable
 eVarLookup :: String -> [LipsVal] -> ProgramState (Error LipsVal)
 eVarLookup name args = do
-  errval <- getVariable name
+  hp <- hasPrimitive name
+  if hp
+    then applyPrimitive name args
+    else do
+      errval <- getVariable name
 
-  case errval of
-    Success val -> safeEval $ LList (val : args)
-    Error   et  -> return $ Error et
+      case errval of
+        Success val -> safeEval $ LList (val : args)
+        Error   et  -> return $ Error et
 
 -- Applying an LFunction to its arguments
 eApply :: LipsVal -> [LipsVal] -> ProgramState (Error LipsVal)
@@ -69,6 +73,7 @@ eApply (LFunction names val) args
   | length names /= length args = return $ Error InvalidFunctionApplicationError
   | otherwise = do
     let zipped = zip names args
+
     forM_ zipped (\(name, arg) -> eBind name arg)
     v <- safeEval val
     forM_ zipped (\(name, arg) -> eDrop name)
