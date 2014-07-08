@@ -53,6 +53,11 @@ set (LList   xs:LNumber index:x:[])              = liftM LList   $ setRaw xs (fl
 set (LString xs:LNumber index:LString (x:[]):[]) = liftM LString $ setRaw xs (floor index) x
 set xs                                           = Error InvalidFunctionApplicationError
 
+-- The id function
+id :: [LipsVal] -> Error LipsVal
+id (x:[]) = Success x
+id other  = Error InvalidFunctionApplicationError
+
 -- The base primitives
 basePrimitives :: Map.Map String Primitive
 basePrimitives = Map.fromList [ ("+", makeBinaryOperator (+))
@@ -61,4 +66,5 @@ basePrimitives = Map.fromList [ ("+", makeBinaryOperator (+))
                               , ("/", makeBinaryOperator (/))
                               , ("get", get)
                               , ("set", set)
+                              , ("id" , id )
                               ]
