@@ -5,6 +5,7 @@ module Language.Lips.Base where
 import qualified Data.Map.Strict as Map
 
 import Control.Monad
+import Prelude hiding (id)
 
 -------------------
 -- Local Imports --
@@ -34,7 +35,7 @@ getRaw xs n
 get :: [LipsVal] -> Error LipsVal
 get (LList   xs:LNumber index:[]) =                            getRaw xs $ floor index
 get (LString xs:LNumber index:[]) = liftM (LString . return) $ getRaw xs $ floor index
-get xs                            = Error InvalidFunctionApplicationError
+get _                             = Error InvalidFunctionApplicationError
 
 -- Setting an element in a list/array
 setRaw :: [a] -> Int -> a -> Error [a]
@@ -51,20 +52,34 @@ setRaw l n a
 set :: [LipsVal] -> Error LipsVal
 set (LList   xs:LNumber index:x:[])              = liftM LList   $ setRaw xs (floor index) x
 set (LString xs:LNumber index:LString (x:[]):[]) = liftM LString $ setRaw xs (floor index) x
-set xs                                           = Error InvalidFunctionApplicationError
+set _                                            = Error InvalidFunctionApplicationError
+
+-- Appending a value to a list or string
+app :: [LipsVal] -> Error LipsVal
+app (LList   xs:          x     :[]) = Success $ LList   $ xs ++ [x]
+app (LString xs:(LString (x:[])):[]) = Success $ LString $ xs ++ [x]
+app _                                = Error InvalidFunctionApplicationError
+
+-- Prepending a value to a list or string
+prep :: [LipsVal] -> Error LipsVal
+prep (LList   xs:          x     :[]) = Success $ LList   $ x : xs
+prep (LString xs:(LString (x:[])):[]) = Success $ LString $ x : xs
+prep _                                = Error InvalidFunctionApplicationError
 
 -- The id function
 id :: [LipsVal] -> Error LipsVal
 id (x:[]) = Success x
-id other  = Error InvalidFunctionApplicationError
+id _      = Error InvalidFunctionApplicationError
 
 -- The base primitives
 basePrimitives :: Map.Map String Primitive
-basePrimitives = Map.fromList [ ("+", makeBinaryOperator (+))
-                              , ("-", makeBinaryOperator (-))
-                              , ("*", makeBinaryOperator (*))
-                              , ("/", makeBinaryOperator (/))
-                              , ("get", get)
-                              , ("set", set)
-                              , ("id" , id )
+basePrimitives = Map.fromList [ ("+"   , makeBinaryOperator (+))
+                              , ("-"   , makeBinaryOperator (-))
+                              , ("*"   , makeBinaryOperator (*))
+                              , ("/"   , makeBinaryOperator (/))
+                              , ("get" , get )
+                              , ("set" , set )
+                              , ("app" , app )
+                              , ("prep", prep)
+                              , ("id"  , id  )
                               ]
