@@ -66,6 +66,10 @@ parseLNumber = do
 parseLString :: Parser LipsVal
 parseLString = liftM LString $ between (char '"') (char '"') (many1 $ noneOf "\"")
 
+-- Parsing an LChar
+parseLChar :: Parser LipsVal
+parseLChar = liftM LChar $ between (char '\'') (char '\'') anyChar
+
 -- Parsing an LFunction
 parseLFunction :: Parser LipsVal
 parseLFunction =
@@ -96,6 +100,7 @@ lipsParser = do
                   , parseLDottedList
                   , parseLNumber
                   , parseLString
+                  , parseLChar
                   , parseQuoted
                   ]
 

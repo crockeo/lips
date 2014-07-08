@@ -64,6 +64,7 @@ data LipsVal = LAtom       String
              | LDottedList [LipsVal] LipsVal
              | LNumber     Double
              | LString     String
+             | LChar       Char
              | LBool       Bool
              | LFunction   [String] LipsVal
 
@@ -74,6 +75,7 @@ instance Show LipsVal where
   show (LDottedList list v) = mconcat ["(", show $ LList list, " . ", show v, ")"]
   show (LNumber     number) = show number
   show (LString     string) = show string
+  show (LChar       char  ) = show char
   show (LBool       True  ) = "#t"
   show (LBool       False ) = "#f"
   show (LFunction   args v) = mconcat ["(lambda ", show $ LList $ map LAtom args, "\n  ", show v, ")"]
