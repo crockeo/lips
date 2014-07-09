@@ -50,21 +50,21 @@ setRaw l n a
           | otherwise = x : setRaw' xs n a (c + 1)
 
 set :: [LipsVal] -> Error LipsVal
-set (LList   xs:LNumber index:x:[])              = liftM LList   $ setRaw xs (floor index) x
-set (LString xs:LNumber index:LString (x:[]):[]) = liftM LString $ setRaw xs (floor index) x
-set _                                            = Error InvalidFunctionApplicationError
+set (LList   xs:LNumber index:      x:[]) = liftM LList   $ setRaw xs (floor index) x
+set (LString xs:LNumber index:LChar x:[]) = liftM LString $ setRaw xs (floor index) x
+set _                                     = Error InvalidFunctionApplicationError
 
 -- Appending a value to a list or string
 app :: [LipsVal] -> Error LipsVal
-app (LList   xs:          x     :[]) = Success $ LList   $ xs ++ [x]
-app (LString xs:(LString (x:[])):[]) = Success $ LString $ xs ++ [x]
-app _                                = Error InvalidFunctionApplicationError
+app (LList   xs:      x:[]) = Success $ LList   $ xs ++ [x]
+app (LString xs:LChar x:[]) = Success $ LString $ xs ++ [x]
+app _                       = Error InvalidFunctionApplicationError
 
 -- Prepending a value to a list or string
 prep :: [LipsVal] -> Error LipsVal
-prep (LList   xs:          x     :[]) = Success $ LList   $ x : xs
-prep (LString xs:(LString (x:[])):[]) = Success $ LString $ x : xs
-prep _                                = Error InvalidFunctionApplicationError
+prep (LList   xs:      x:[]) = Success $ LList   $ x : xs
+prep (LString xs:LChar x:[]) = Success $ LString $ x : xs
+prep _                       = Error InvalidFunctionApplicationError
 
 -- The id function
 id :: [LipsVal] -> Error LipsVal
