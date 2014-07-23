@@ -54,6 +54,20 @@ set (LList   xs:LNumber index:      x:[]) = liftM LList   $ setRaw xs (floor ind
 set (LString xs:LNumber index:LChar x:[]) = liftM LString $ setRaw xs (floor index) x
 set _                                     = Error InvalidFunctionApplicationError
 
+-- Concatenating a list of LLists or LStrings
+stringToArray :: LipsVal -> Error String
+stringToArray (LString x) = Success x
+stringToArray _           = Error InvalidTypeError
+
+listToArray :: LipsVal -> Error [LipsVal]
+listToArray (LList x) = Success x
+listToArray _         = Error InvalidTypeError
+
+cons :: [LipsVal] -> Error LipsVal
+cons l@(LString x:xs) = liftM (LString . foldl1 (++)) $ sequence $ map stringToArray l
+cons l@(LList   x:xs) = liftM (LList   . foldl1 (++)) $ sequence $ map listToArray   l
+cons []               = Error InvalidFunctionApplicationError
+
 -- Appending a value to a list or string
 app :: [LipsVal] -> Error LipsVal
 app (LList   xs:      x:[]) = Success $ LList   $ xs ++ [x]
@@ -79,6 +93,7 @@ basePrimitives = Map.fromList [ ("+"   , makeBinaryOperator (+))
                               , ("/"   , makeBinaryOperator (/))
                               , ("get" , get )
                               , ("set" , set )
+                              , ("cons", cons)
                               , ("app" , app )
                               , ("prep", prep)
                               , ("id"  , id  )
